@@ -26,15 +26,20 @@ export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   // Auto-fill demo credentials
-  const fillDemoCredentials = (role: "doctor" | "patient" | "admin") => {
+  const fillDemoCredentials = (
+    role: "doctor" | "patient" | "nurse" | "laboratory"
+  ) => {
     if (role === "doctor") {
       setEmail("doctor@icare.com");
       setPassword("password");
     } else if (role === "patient") {
       setEmail("patient@icare.com");
       setPassword("password");
-    } else if (role === "admin") {
-      setEmail("admin@icare.com");
+    } else if (role === "nurse") {
+      setEmail("nurse@icare.com");
+      setPassword("password");
+    } else if (role === "laboratory") {
+      setEmail("lab@example.com");
       setPassword("password");
     }
   };
@@ -52,7 +57,11 @@ export const LoginForm = () => {
     try {
       await login(email, password);
       toast.success("Login successful! Redirecting to dashboard...");
-      navigate("/dashboard");
+      if (email === "lab@example.com") {
+        navigate("/laboratory/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       toast.error("Invalid email or password");
       console.error("Login error:", error);
@@ -161,7 +170,7 @@ export const LoginForm = () => {
           <p className="text-sm text-blue-700 dark:text-blue-300 mb-3 font-medium">
             Demo Accounts:
           </p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -182,9 +191,17 @@ export const LoginForm = () => {
               size="sm"
               variant="outline"
               className="text-xs border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all"
-              onClick={() => fillDemoCredentials("admin")}
+              onClick={() => fillDemoCredentials("nurse")}
             >
-              Admin
+              Nurse
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all"
+              onClick={() => fillDemoCredentials("laboratory")}
+            >
+              Laboratory
             </Button>
           </div>
         </div>
