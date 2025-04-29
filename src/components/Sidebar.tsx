@@ -23,6 +23,11 @@ import {
   Pill,
   Brain,
   Heart,
+  Users,
+  Building2,
+  BarChart2,
+  Microscope,
+  TestTube,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -32,6 +37,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+type UserRole = "doctor" | "nurse" | "laboratory" | "patient" | "admin";
 
 // Keep your doctorNavItems array
 const doctorNavItems = [
@@ -77,40 +84,122 @@ const doctorNavItems = [
   },
 ];
 
+// Add nurse navigation items
+const nurseNavItems = [
+  {
+    title: "Home",
+    icon: Home,
+    href: "/dashboard",
+  },
+  {
+    title: "Patient Vitals",
+    icon: ActivitySquare,
+    href: "/patient-vitals",
+  },
+  {
+    title: "Medication Schedule",
+    icon: Pill,
+    href: "/medication-schedule",
+  },
+  {
+    title: "Patient Records",
+    icon: FileText,
+    href: "/patient-records",
+  },
+  {
+    title: "Shift Schedule",
+    icon: Calendar,
+    href: "/shift-schedule",
+  },
+  {
+    title: "Help",
+    icon: HelpCircle,
+    href: "/help",
+  },
+  {
+    title: "User Profile",
+    icon: User,
+    href: "/nurse-profile",
+  },
+];
+
 // Modify the getNavItems function
-const getNavItems = (role: string) => {
-  if (role === "doctor") {
-    return doctorNavItems.map((item) => ({
-      name: item.title, // Convert title to name to match existing structure
-      path: item.href, // Convert href to path to match existing structure
-      icon: item.icon,
-    }));
+const getNavItems = (role: UserRole) => {
+  switch (role) {
+    case "doctor":
+      return [
+        { name: "Home", href: "/dashboard", icon: Home },
+        { name: "Appointments", href: "/appointments", icon: Calendar },
+        { name: "Patients", href: "/patients", icon: Users },
+        { name: "Prescriptions", href: "/prescriptions", icon: FileText },
+        {
+          name: "Medical Records",
+          href: "/medical-records",
+          icon: ClipboardList,
+        },
+        { name: "Help", href: "/help", icon: HelpCircle },
+        { name: "User Profile", href: "/profile", icon: User },
+      ];
+    case "nurse":
+      return [
+        { name: "Home", href: "/dashboard", icon: Home },
+        { name: "Patient Vitals", href: "/patient-vitals", icon: Activity },
+        {
+          name: "Medication Schedule",
+          href: "/medication-schedule",
+          icon: Pill,
+        },
+        { name: "Patient Records", href: "/patient-records", icon: FileText },
+        { name: "Shift Schedule", href: "/shift-schedule", icon: Calendar },
+        { name: "Help", href: "/help", icon: HelpCircle },
+        { name: "User Profile", href: "/profile", icon: User },
+      ];
+    case "laboratory":
+      return [
+        { name: "Dashboard", href: "/laboratory/dashboard", icon: Home },
+        {
+          name: "Test Requests",
+          href: "/laboratory/test-requests",
+          icon: ClipboardList,
+        },
+        {
+          name: "Test Results",
+          href: "/laboratory/test-results",
+          icon: FileText,
+        },
+        { name: "Equipment", href: "/laboratory/equipment", icon: Microscope },
+        { name: "Inventory", href: "/laboratory/inventory", icon: TestTube },
+        {
+          name: "Quality Control",
+          href: "/laboratory/quality-control",
+          icon: Activity,
+        },
+        { name: "Help", href: "/laboratory/help", icon: HelpCircle },
+        { name: "User Profile", href: "/laboratory/profile", icon: User },
+      ];
+    case "patient":
+      return [
+        { name: "Home", href: "/dashboard", icon: Home },
+        { name: "Appointments", href: "/appointments", icon: Calendar },
+        { name: "Medical Records", href: "/medical-records", icon: FileText },
+        { name: "Prescriptions", href: "/prescriptions", icon: Pill },
+        { name: "Billing", href: "/billing", icon: CreditCard },
+        { name: "Help", href: "/help", icon: HelpCircle },
+        { name: "User Profile", href: "/profile", icon: User },
+      ];
+    case "admin":
+      return [
+        { name: "Home", href: "/dashboard", icon: Home },
+        { name: "Users", href: "/users", icon: Users },
+        { name: "Departments", href: "/departments", icon: Building2 },
+        { name: "Settings", href: "/settings", icon: Settings },
+        { name: "Reports", href: "/reports", icon: BarChart2 },
+        { name: "Help", href: "/help", icon: HelpCircle },
+        { name: "User Profile", href: "/profile", icon: User },
+      ];
+    default:
+      return [];
   }
-
-  // Updated patient navigation items to match the image
-  if (role === "patient") {
-    return [
-      { name: "Dashboard", path: "/dashboard", icon: Home },
-      {
-        name: "Diagnostic Reports",
-        path: "/diagnostic-reports",
-        icon: FileText,
-      },
-      {
-        name: "Medical History",
-        path: "/medical-history",
-        icon: ClipboardList,
-      },
-      { name: "Prescriptions", path: "/prescriptions", icon: Pill },
-      { name: "AI Features", path: "/ai-features", icon: Brain },
-      { name: "Profile", path: "/profile", icon: User },
-      { name: "Health Program", path: "/health-program", icon: Heart },
-      { name: "Settings", path: "/settings", icon: Settings },
-    ];
-  }
-
-  // Default case - return empty array if role doesn't match
-  return [];
 };
 
 export const Sidebar = ({ onCollapseChange }) => {
@@ -161,15 +250,7 @@ export const Sidebar = ({ onCollapseChange }) => {
         )}
       </button>
 
-      {/* Sidebar overlay for mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Sidebar container */}
+      {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex flex-col bg-gradient-to-b from-medical-navy via-medical-blue to-medical-navy text-white transition-all duration-300 shadow-xl",
@@ -208,13 +289,13 @@ export const Sidebar = ({ onCollapseChange }) => {
         <TooltipProvider delayDuration={0}>
           <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {navItems.map((item) => (
-              <Tooltip key={item.path}>
+              <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
                   <Link
-                    to={item.path}
+                    to={item.href}
                     className={cn(
                       "flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
-                      location.pathname === item.path
+                      location.pathname === item.href
                         ? "bg-white/15 text-white shadow-inner"
                         : "text-white/70 hover:bg-white/10 hover:text-white",
                       isCollapsed && "justify-center px-3"
@@ -224,7 +305,7 @@ export const Sidebar = ({ onCollapseChange }) => {
                       className={cn(
                         "h-5 w-5",
                         isCollapsed ? "mr-0" : "mr-3",
-                        location.pathname === item.path
+                        location.pathname === item.href
                           ? "text-white"
                           : "text-white/70"
                       )}
@@ -309,7 +390,9 @@ export const Sidebar = ({ onCollapseChange }) => {
               <img
                 src={
                   user.avatar ||
-                  `https://ui-avatars.com/api/?name=${user.name || "/placeholder.svg"}&background=0D8ABC&color=fff`
+                  `https://ui-avatars.com/api/?name=${
+                    user.name || "/placeholder.svg"
+                  }&background=0D8ABC&color=fff`
                 }
                 alt={user.name}
                 className="h-9 w-9 rounded-full object-cover border-2 border-white/20"
@@ -330,7 +413,9 @@ export const Sidebar = ({ onCollapseChange }) => {
                       <img
                         src={
                           user.avatar ||
-                          `https://ui-avatars.com/api/?name=${user.name || "/placeholder.svg"}&background=0D8ABC&color=fff`
+                          `https://ui-avatars.com/api/?name=${
+                            user.name || "/placeholder.svg"
+                          }&background=0D8ABC&color=fff`
                         }
                         alt={user.name}
                         className="h-8 w-8 rounded-full object-cover"
@@ -349,6 +434,14 @@ export const Sidebar = ({ onCollapseChange }) => {
           )}
         </div>
       </aside>
+
+      {/* Sidebar overlay for mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 };

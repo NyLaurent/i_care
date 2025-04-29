@@ -7,7 +7,7 @@ import {
 } from "react";
 
 // Role type to restrict role values
-export type UserRole = "patient" | "doctor" | "admin";
+export type UserRole = "patient" | "doctor" | "admin" | "nurse" | "laboratory";
 
 // User interface
 export interface User {
@@ -64,6 +64,22 @@ const MOCK_USERS = [
     role: "admin" as UserRole,
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop",
+  },
+  {
+    id: "4",
+    name: "Nurse Sarah Johnson",
+    email: "nurse@icare.com",
+    password: "password",
+    role: "nurse" as UserRole,
+    avatar:
+      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=150&auto=format&fit=crop",
+  },
+  {
+    id: "lab-1",
+    name: "Lab Technician John Smith",
+    email: "lab@example.com",
+    password: "password",
+    role: "laboratory" as UserRole,
   },
 ];
 
